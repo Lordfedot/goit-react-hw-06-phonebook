@@ -7,7 +7,7 @@ export const List = styled.ul`
   gap: 15px;
 `;
 
-export const Contact = styled.li`
+export const ContactItem = styled.li`
   display: flex;
   gap: 15px;
   align-items: center;

@@ -1,45 +1,34 @@
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Form, Input, Button } from './Styled/ContactForm.styled';
+import { addContact } from 'components/redux/slices/contactSlice';
+import { getContacts } from 'components/redux/selectors';
 
+const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
 
-const ContactForm = ({ onSubmit }) => {
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const handleSubmit = event => {
+    event.preventDefault();
+    const form = event.target;
+    const name = form.elements.text.value;
+    const value = form.elements.phone.value;
+    const names = contacts.map(contact => contact.name);
 
-  const handleChange = e => {
-    const { name, value } = e.currentTarget;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'phone':
-        setPhone(value);
-        break;
-      default:
-        return console.error('Error');
+    if (names.includes(name)) {
+      alert('This name is already exists');
+      return;
     }
-  };
-  const submitForm = e => {
-    e.preventDefault();
-
-    onSubmit({ name, phone });
-
-    reset();
-  };
-  const reset = () => {
-    setName('');
-    setPhone('');
+    dispatch(addContact(name, value));
+    form.reset();
   };
 
   return (
-    <Form onSubmit={submitForm}>
+    <Form onSubmit={handleSubmit}>
       <label>
         Name
         <Input
-          onChange={handleChange}
           type="text"
-          name="name"
-          value={name}
+          name="text"
           pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
           title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
           required
@@ -49,8 +38,6 @@ const ContactForm = ({ onSubmit }) => {
         Phone
         <Input
           type="tel"
-          onChange={handleChange}
-          value={phone}
           name="phone"
           pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
           title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
